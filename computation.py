@@ -72,11 +72,22 @@ class Vector :
 
 class Matrix :
 
+    @staticmethod
+    def zeros(rows, cols) :
+        return Matrix([[0 for col in range(cols)] for row in range(rows)])
+
+    @staticmethod
+    def ones(rows, cols) :
+        return Matrix([[1 for col in range(cols) for row in range(rows)]])
+
     def __init__(self, val=[[0]]) :
         self.val = val
 
     def __str__(self) :
         return str(self.val)
+
+    def __getitem__(self, index) :
+        return self.val[index]
 
     def cols(self) :
         if len(self.val) > 0 :
@@ -97,8 +108,7 @@ class Matrix :
     def row(self, index) :
         if index >= self.rows() :
             raise KeyError("Index is out of bounds.")
-        return Vector(self.val[index], Vector.VERTICAL)
-
+        return Vector(list(self.val[index]), Vector.VERTICAL)
 
     def __mul__(self, other) :
         if type(other) is Matrix :
@@ -130,3 +140,8 @@ class Matrix :
 
     def __rmul__(self, other) :
         return self.__mul__(other)
+
+    def transpose(self) :
+        return Matrix([
+            self.col(i).val for i in range(self.cols())
+        ])

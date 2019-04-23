@@ -1,6 +1,11 @@
 from computation import Vector
 from computation import Matrix
 
-a = Vector([1,2,3])
+a = Matrix([
+    [1, 0],
+    [0, 1]
+])
 
-print(5* a)
+b = Vector([1, 10])
+
+print(a * b)
