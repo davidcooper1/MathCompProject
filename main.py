@@ -2,10 +2,8 @@ from computation import Vector
 from computation import Matrix
 
 a = Matrix([
-    [1, 0],
-    [0, 1]
+    [1-2j],
+    [2-5j]
 ])
 
-b = Vector([1, 10])
-
-print(a * b)
+print(a.conjugate())

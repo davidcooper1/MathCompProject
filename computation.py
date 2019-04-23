@@ -1,3 +1,6 @@
+def _conjugate(num) :
+    return complex(num.real, -num.imag)
+
 class Vector :
     """
         This class is meant to represent a mathematical vector.
@@ -58,6 +61,8 @@ class Vector :
     def __mul__(self, other) :
         if type(other) is int or type(other) is float or type(other) is complex :
             return Vector([self[i] * other for i in range(len(self))], self.orientation)
+        elif type(other) is Matrix :
+            return Matrix(self) * other
         else :
             return NotImplemented
 
@@ -81,6 +86,13 @@ class Matrix :
         return Matrix([[1 for col in range(cols) for row in range(rows)]])
 
     def __init__(self, val=[[0]]) :
+        if type(val) is Vector :
+            if val.orientation == Vector.VERTICAL :
+                self.val = [[val[i]] for i in range(len(val))]
+                return
+            elif val.orientation == Vector.HORIZONTAL :
+                self.val = [val[i] for i in range(len(val))]
+                return
         self.val = val
 
     def __str__(self) :
@@ -121,14 +133,7 @@ class Matrix :
                 ] for row in range(self.rows())
             ])
         elif type(other) is Vector :
-            if other.orientation == Vector.VERTICAL :
-                if self.cols() != len(other) :
-                    raise TypeError("Matrix and Vector have incompatible dimensions: ({}, {}), {}".format(self.rows(), self.cols(), len(other)))
-                return Vector([
-                    self.row(row).dot(other) for row in range(self.rows())
-                ], Vector.VERTICAL);
-            else :
-                raise TypeError("Expected Vector in vertical orientation.")
+            return self.__mul__(Matrix(other))
         elif type(other) is int or type(other) is float or type(other) is complex :
             return Matrix([
                 [
@@ -139,9 +144,16 @@ class Matrix :
             return NotImplemented
 
     def __rmul__(self, other) :
-        return self.__mul__(other)
+        if type(other) is int or type(other) is float or type(other) is complex :
+            return self.__mul__(other)
+        return NotImplemented
 
     def transpose(self) :
         return Matrix([
             self.col(i).val for i in range(self.cols())
+        ])
+
+    def conjugate(self) :
+        return Matrix([
+            list(map(_conjugate, self.row(row).val)) for row in range(self.rows())
         ])
