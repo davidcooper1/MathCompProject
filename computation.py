@@ -62,13 +62,27 @@ class Vector :
         if type(other) is int or type(other) is float or type(other) is complex :
             return Vector([self[i] * other for i in range(len(self))], self.orientation)
         elif type(other) is Matrix :
-            return Matrix(self) * other
+            result = Matrix(self) * other
+            if result.rows() == 1 :
+                return result.row(0)
+            elif result.cols() == 1 :
+                return result.col(0)
+            else :
+                return result
         else :
             return NotImplemented
 
     def __rmul__(self, other) :
         if type(other) is int or type(other) is float or type(other) is complex :
             return Vector([self[i] * other for i in range(len(self))], self.orientation)
+        elif type(other) is Matrix :
+            result = other * Matrix(self)
+            if result.rows() == 1 :
+                return result.row(0)
+            elif result.cols() == 1 :
+                return result.col(0)
+            else :
+                return result
         else :
             return NotImplemented
 
@@ -91,9 +105,14 @@ class Matrix :
                 self.val = [[val[i]] for i in range(len(val))]
                 return
             elif val.orientation == Vector.HORIZONTAL :
-                self.val = [val[i] for i in range(len(val))]
+                self.val = [[val[i] for i in range(len(val))]]
                 return
         self.val = val
+
+    def copy() :
+        return Matrix([
+            [ self.val[i][j] for j in self.cols() ] for i in self.rows()
+        ])
 
     def __str__(self) :
         return str(self.val)
@@ -132,8 +151,6 @@ class Matrix :
                     for col in range(other.cols())
                 ] for row in range(self.rows())
             ])
-        elif type(other) is Vector :
-            return self.__mul__(Matrix(other))
         elif type(other) is int or type(other) is float or type(other) is complex :
             return Matrix([
                 [
